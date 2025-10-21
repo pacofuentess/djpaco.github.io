@@ -803,10 +803,13 @@
   .release-image {
     position: relative;
     overflow: hidden;
+    height: 200px;
   }
   
   .release-image img {
     width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: transform var(--transition-medium);
   }
   
