@@ -914,7 +914,7 @@
     margin: 0 auto;
   }
   
-  .video-wrapper {
+.video-wrapper {
     background-color: var(--light-color);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
@@ -943,6 +943,76 @@
     height: 100%;
     border: 0;
     border-radius: var(--border-radius-md);
+  }
+
+  /* Grid de éxitos dentro del video-wrapper */
+  .video-wrapper .releases-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .video-wrapper .release-card {
+    background-color: var(--light-color);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+  }
+
+  .video-wrapper .release-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .video-wrapper .release-image {
+    position: relative;
+    overflow: hidden;
+    height: 150px;
+  }
+
+  .video-wrapper .release-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-medium);
+  }
+
+  .video-wrapper .release-card:hover .release-image img {
+    transform: scale(1.05);
+  }
+
+  .video-wrapper .release-info {
+    padding: 1rem;
+  }
+
+  .video-wrapper .release-info h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    text-align: left;
+  }
+
+  .video-wrapper .release-info p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  .video-wrapper .release-platforms {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .video-wrapper .platform-icon {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    transition: color var(--transition-medium);
+  }
+
+  .video-wrapper .platform-icon:hover {
+    color: var(--primary-color);
   }
   
   /* ===== MUSIC PLAYER SECTION ===== */
