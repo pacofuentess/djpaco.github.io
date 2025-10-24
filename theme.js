@@ -265,14 +265,14 @@ const audioPlayer = document.createElement("audio")
 const tracks = [
   {
     title: "Amontestado Ft. Yisus",
-    artist: "DJ Paco",
+    artist: "DJ Paquito",
     duration: 215, // in seconds
     url: "https://www.youtube.com/embed/M113AVvcjC4?si=p7nfBLLidEZVj88N",
     audioUrl: "https://example.com/audio/amontestado.mp3", // URL de ejemplo, reemplazar con URL real
   },
   {
     title: "Paquito Dimisión Ft.Suno",
-    artist: "DJ Paco",
+    artist: "DJ Paquito",
     duration: 252, // in seconds
     url: "https://www.youtube.com/embed/Yz_5vIRSYKc?si=aK5o-LyxBjtBBVKv",
     audioUrl: "https://example.com/audio/paquito-dimision.mp3", // URL de ejemplo, reemplazar con URL real
