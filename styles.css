@@ -905,15 +905,6 @@
     background-color: var(--gray-color);
     padding: 5rem 2rem;
   }
-  
-  .videos-container {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  
 .video-wrapper {
     background-color: var(--light-color);
     border-radius: var(--border-radius-lg);
@@ -1014,7 +1005,6 @@
   .video-wrapper .platform-icon:hover {
     color: var(--primary-color);
   }
-  
   /* ===== MUSIC PLAYER SECTION ===== */
   .music-player {
     background-color: var(--gray-color);
