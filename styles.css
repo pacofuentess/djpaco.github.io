@@ -936,38 +936,38 @@
     border-radius: var(--border-radius-md);
   }
 
-  /* Grid de éxitos dentro del video-wrapper - MINI VERSION */
+  /* Grid de éxitos dentro del video-wrapper - EXTRA MINI VERSION */
   .video-wrapper .releases-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-    margin-top: 1rem;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
   }
 
   .video-wrapper .release-card {
     background-color: var(--gray-color);
-    border-radius: var(--border-radius-sm);
+    border-radius: 4px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
   }
 
   .video-wrapper .release-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   }
 
   .video-wrapper .release-image {
     position: relative;
     overflow: hidden;
-    height: 80px;
+    height: 60px;
   }
 
   .video-wrapper .release-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform var(--transition-medium);
+    transition: transform 0.3s;
   }
 
   .video-wrapper .release-card:hover .release-image img {
@@ -985,7 +985,7 @@
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity var(--transition-fast);
+    transition: opacity 0.2s;
   }
 
   .video-wrapper .release-card:hover .play-overlay {
@@ -993,29 +993,29 @@
   }
 
   .video-wrapper .play-overlay i {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: var(--light-color);
   }
 
   .video-wrapper .release-info {
-    padding: 0.5rem;
+    padding: 0.4rem;
   }
 
   .video-wrapper .release-info h3 {
-    font-size: 0.75rem;
-    margin-bottom: 0.15rem;
+    font-size: 0.65rem;
+    margin-bottom: 0.1rem;
     text-align: left;
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1.1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .video-wrapper .release-info p {
-    font-size: 0.65rem;
+    font-size: 0.55rem;
     color: var(--text-secondary);
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1023,14 +1023,14 @@
 
   .video-wrapper .release-platforms {
     display: flex;
-    gap: 0.35rem;
+    gap: 0.25rem;
     justify-content: flex-start;
   }
 
   .video-wrapper .platform-icon {
     color: var(--text-secondary);
-    font-size: 0.85rem;
-    transition: color var(--transition-fast);
+    font-size: 0.7rem;
+    transition: color 0.2s;
   }
 
   .video-wrapper .platform-icon:hover {
