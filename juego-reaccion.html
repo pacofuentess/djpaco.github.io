@@ -122,7 +122,16 @@
             background: var(--secondary-color);
             color: white;
         }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+            border: 2px solid var(--primary-color);
+        }
 
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
         .reaction-area.fail {
             /* Estado fallo con rosa oscuro */
             background: #d32f2f;
