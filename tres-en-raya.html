@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tres en Raya - DJ Paco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color de DJ Paco */
+        :root {
+            --primary-color: #ff3366;
+            --secondary-color: #6c63ff;
+            --accent-color: #00d9ff;
+            --dark-color: #121212;
+            --dark-secondary: #1e1e1e;
+            --light-color: #ffffff;
+            --gray-color: #f5f5f5;
+            --text-color: #333333;
+            --font-primary: "Montserrat", sans-serif;
+            --font-secondary: "Poppins", sans-serif;
+            --transition-medium: 0.3s ease;
+            --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
+            --border-radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Fondo oscuro de DJ Paco */
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--dark-secondary) 100%);
+            color: var(--light-color);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            /* Botón con gradiente rosa-morado */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .game-container {
+            max-width: 500px;
+            width: 100%;
+            margin-top: 3rem;
+        }
+
+        /* Título con gradiente de DJ Paco */
+        h1 {
+            font-family: var(--font-secondary);
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .status {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-text {
+            /* Texto de estado en rosa */
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .board {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 12px;
+            font-size: 3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #667eea;
+            /* añadida escala inicial para mejor feedback visual */
+            position: relative;
+        }
+
+        .cell::after {
+            /* efecto de sombra interior en hover */
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, transparent, rgba(255, 51, 102, 0.1));
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .cell:hover:not(:disabled)::after {
+            opacity: 1;
+        }
+
+        .cell:hover:not(:disabled) {
+            background: #e2e8f0;
+            transform: scale(1.05);
+            /* añadida sombra en hover */
+            box-shadow: 0 4px 12px rgba(108, 99, 255, 0.2);
+        }
+
+        .cell:active:not(:disabled) {
+            /* feedback táctil mejorado */
+            transform: scale(0.95);
+        }
+
+        .cell.x {
+            /* X en rosa */
+            color: var(--primary-color);
+            /* añadida animación de aparición */
+        }
+
+        .cell.o {
+            /* O en morado */
+            color: var(--secondary-color);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .winner {
+            /* Celdas ganadoras con gradiente */
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color)) !important;
+            color: white !important;
+            animation: winPulse 0.5s ease;
+        }
+
+        @keyframes winPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .controls {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-button {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+
+        .mode-button.active {
+            /* Botón activo con gradiente rosa-morado */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-color: transparent;
+        }
+
+        button.reset {
+            width: 100%;
+            /* Botón reset con gradiente */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        button.reset:hover {
+            transform: translateY(-2px);
+        }
+
+        .stats {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            /* Valores estadísticos en rosa */
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .cell {
+                font-size: 2rem;
+            }
+
+            .mode-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Volver</a>
+    
+    <div class="game-container">
+        <h1>Tres en Raya</h1>
+
+        <div class="status">
+            <div class="status-text" id="status">Turno de X</div>
+        </div>
+
+        <div class="board">
+            <div class="grid" id="grid">
+                <button class="cell" data-index="0"></button>
+                <button class="cell" data-index="1"></button>
+                <button class="cell" data-index="2"></button>
+                <button class="cell" data-index="3"></button>
+                <button class="cell" data-index="4"></button>
+                <button class="cell" data-index="5"></button>
+                <button class="cell" data-index="6"></button>
+                <button class="cell" data-index="7"></button>
+                <button class="cell" data-index="8"></button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="mode-selector">
+                <button class="mode-button active" onclick="setMode('cpu')">vs Computadora</button>
+                <button class="mode-button" onclick="setMode('player')">vs Jugador</button>
+            </div>
+            <button class="reset" onclick="resetGame()">Nuevo Juego</button>
+        </div>
+
+        <div class="stats">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">X Gana</div>
+                    <div class="stat-value" id="xWins">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Empates</div>
+                    <div class="stat-value" id="draws">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">O Gana</div>
+                    <div class="stat-value" id="oWins">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let gameMode = 'cpu';
+        let stats = { xWins: 0, oWins: 0, draws: 0 };
+
+        const winConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => {
+            cell.addEventListener('click', handleCellClick);
+        });
+
+        loadStats();
+
+        function handleCellClick(e) {
+            const index = e.target.dataset.index;
+            
+            if (board[index] !== '' || !gameActive) return;
+            
+            makeMove(index, currentPlayer);
+            
+            if (gameActive && gameMode === 'cpu' && currentPlayer === 'O') {
+                setTimeout(makeCPUMove, 500);
+            }
+        }
+
+        function makeMove(index, player) {
+            board[index] = player;
+            const cell = cells[index];
+            cell.textContent = player;
+            cell.classList.add(player.toLowerCase());
+            cell.disabled = true;
+            
+            cell.style.animation = 'popIn 0.3s ease';
+            
+            checkResult();
+        }
+
+        function checkResult() {
+            let roundWon = false;
+            let winningCombination = null;
+
+            for (let condition of winConditions) {
+                const [a, b, c] = condition;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    roundWon = true;
+                    winningCombination = condition;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                winningCombination.forEach(index => {
+                    cells[index].classList.add('winner');
+                });
+                document.getElementById('status').textContent = `¡${currentPlayer} Gana!`;
+                gameActive = false;
+                
+                if (currentPlayer === 'X') {
+                    stats.xWins++;
+                } else {
+                    stats.oWins++;
+                }
+                saveStats();
+                updateStatsDisplay();
+                return;
+            }
+
+            if (!board.includes('')) {
+                document.getElementById('status').textContent = '¡Empate!';
+                gameActive = false;
+                stats.draws++;
+                saveStats();
+                updateStatsDisplay();
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            document.getElementById('status').textContent = `Turno de ${currentPlayer}`;
+        }
+
+        function makeCPUMove() {
+            const availableCells = board.map((val, idx) => val === '' ? idx : null).filter(val => val !== null);
+            
+            let move = findWinningMove('O');
+            if (move === null) move = findWinningMove('X');
+            if (move === null && board[4] === '') move = 4;
+            if (move === null) move = availableCells[Math.floor(Math.random() * availableCells.length)];
+            
+            makeMove(move, 'O');
+        }
+
+        function findWinningMove(player) {
+            for (let condition of winConditions) {
+                const [a, b, c] = condition;
+                const cells = [board[a], board[b], board[c]];
+                const playerCount = cells.filter(cell => cell === player).length;
+                const emptyCount = cells.filter(cell => cell === '').length;
+                
+                if (playerCount === 2 && emptyCount === 1) {
+                    if (board[a] === '') return a;
+                    if (board[b] === '') return b;
+                    if (board[c] === '') return c;
+                }
+            }
+            return null;
+        }
+
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.disabled = false;
+                cell.className = 'cell';
+            });
+            
+            document.getElementById('status').textContent = 'Turno de X';
+        }
+
+        function setMode(mode) {
+            gameMode = mode;
+            document.querySelectorAll('.mode-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            resetGame();
+        }
+
+        function loadStats() {
+            const saved = localStorage.getItem('tictactoeStats');
+            if (saved) {
+                stats = JSON.parse(saved);
+                updateStatsDisplay();
+            }
+        }
+
+        function saveStats() {
+            localStorage.setItem('tictactoeStats', JSON.stringify(stats));
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('xWins').textContent = stats.xWins;
+            document.getElementById('oWins').textContent = stats.oWins;
+            document.getElementById('draws').textContent = stats.draws;
+        }
+    </script>
+</body>
+</html>

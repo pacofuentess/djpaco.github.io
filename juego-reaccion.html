@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Reacción - DJ Paco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color de DJ Paco */
+        :root {
+            --primary-color: #ff3366;
+            --secondary-color: #6c63ff;
+            --accent-color: #00d9ff;
+            --dark-color: #121212;
+            --dark-secondary: #1e1e1e;
+            --light-color: #ffffff;
+            --gray-color: #f5f5f5;
+            --text-color: #333333;
+            --font-primary: "Montserrat", sans-serif;
+            --font-secondary: "Poppins", sans-serif;
+            --transition-medium: 0.3s ease;
+            --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
+            --border-radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Fondo oscuro de DJ Paco */
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--dark-secondary) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        /* Título con gradiente rosa-cyan */
+        h1 {
+            font-family: var(--font-secondary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .reaction-area {
+            height: 400px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 40px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reaction-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .reaction-area:hover::before {
+            opacity: 1;
+        }
+
+        .reaction-area:active {
+            transform: scale(0.98);
+        }
+
+        .reaction-area.waiting {
+            /* Estado esperando con gradiente rosa-morado */
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .reaction-area.ready {
+            /* Estado listo con color rosa */
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .reaction-area.go {
+            /* Estado go con color cyan */
+            background: var(--accent-color);
+            color: white;
+            animation: pulse 0.5s;
+        }
+
+        .reaction-area.success {
+            /* Estado éxito con morado */
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .reaction-area.fail {
+            /* Estado fallo con rosa oscuro */
+            background: #d32f2f;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .result {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .instruction {
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            /* Tarjetas de estadísticas con gradiente */
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card:hover {
+            /* Efecto hover mejorado */
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 51, 102, 0.4);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .history {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 15px;
+        }
+
+        .history-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .history-item {
+            padding: 10px 15px;
+            background: white;
+            border-radius: 10px;
+            /* Borde rosa */
+            border: 2px solid var(--primary-color);
+            font-weight: bold;
+        }
+
+        .history-item.best {
+            /* Mejor tiempo con gradiente cyan-morado */
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            /* Botón reset con gradiente */
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+        }
+
+        .emoji {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>⚡ Test de Reacción</h1>
+        
+        <div class="reaction-area waiting" id="reactionArea">
+            <div class="emoji">👆</div>
+            <div class="instruction">Haz clic para comenzar</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Último Tiempo</div>
+                <div class="stat-value" id="lastTime">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Mejor Tiempo</div>
+                <div class="stat-value" id="bestTime">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Promedio</div>
+                <div class="stat-value" id="avgTime">-</div>
+            </div>
+        </div>
+
+        <div class="history">
+            <div class="history-title">📊 Últimos 10 intentos</div>
+            <div class="history-list" id="historyList">
+                <p style="color: #999;">Aún no hay intentos registrados</p>
+            </div>
+        </div>
+
+        <button class="reset-btn" onclick="resetStats()">🔄 Reiniciar Estadísticas</button>
+    </div>
+
+    <script>
+        let state = 'waiting'; // waiting, ready, go, result
+        let startTime;
+        let timeout;
+        let history = JSON.parse(localStorage.getItem('reactionHistory')) || [];
+
+        const area = document.getElementById('reactionArea');
+
+        function updateDisplay() {
+            if (history.length === 0) {
+                document.getElementById('lastTime').textContent = '-';
+                document.getElementById('bestTime').textContent = '-';
+                document.getElementById('avgTime').textContent = '-';
+                document.getElementById('historyList').innerHTML = '<p style="color: #999;">Aún no hay intentos registrados</p>';
+                return;
+            }
+
+            const last = history[history.length - 1];
+            const best = Math.min(...history);
+            const avg = Math.round(history.reduce((a, b) => a + b, 0) / history.length);
+
+            document.getElementById('lastTime').textContent = `${last}ms`;
+            document.getElementById('bestTime').textContent = `${best}ms`;
+            document.getElementById('avgTime').textContent = `${avg}ms`;
+
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = history.slice(-10).reverse().map((time, index) => 
+                `<div class="history-item ${time === best ? 'best' : ''}">${time}ms</div>`
+            ).join('');
+        }
+
+        function startTest() {
+            state = 'ready';
+            area.className = 'reaction-area ready';
+            area.innerHTML = `
+                <div class="emoji">⏳</div>
+                <div class="instruction">Espera al color azul...</div>
+            `;
+
+            const waitTime = Math.random() * 3000 + 2000; // 2-5 segundos
+            
+            timeout = setTimeout(() => {
+                if (state === 'ready') {
+                    state = 'go';
+                    startTime = Date.now();
+                    area.className = 'reaction-area go';
+                    area.innerHTML = `
+                        <div class="emoji">⚡</div>
+                        <div class="instruction">¡HAZ CLIC AHORA!</div>
+                    `;
+                }
+            }, waitTime);
+        }
+
+        function recordTime() {
+            const reactionTime = Date.now() - startTime;
+            history.push(reactionTime);
+            localStorage.setItem('reactionHistory', JSON.stringify(history));
+
+            // Vibración según el tiempo de reacción
+            if (navigator.vibrate) {
+                if (reactionTime < 200) {
+                    navigator.vibrate([50, 30, 50, 30, 50]);
+                } else if (reactionTime < 300) {
+                    navigator.vibrate([100, 50, 100]);
+                } else {
+                    navigator.vibrate(100);
+                }
+            }
+
+            state = 'result';
+            area.className = 'reaction-area success';
+            
+            let emoji = '🎉';
+            let message = '¡Excelente!';
+            
+            if (reactionTime < 200) {
+                emoji = '🚀';
+                message = '¡Increíble! Velocidad de relámpago';
+            } else if (reactionTime < 300) {
+                emoji = '⚡';
+                message = '¡Muy rápido!';
+            } else if (reactionTime < 400) {
+                emoji = '👍';
+                message = '¡Buen trabajo!';
+            } else if (reactionTime < 500) {
+                emoji = '👌';
+                message = 'Bien hecho';
+            } else {
+                emoji = '🐌';
+                message = 'Puedes mejorar';
+            }
+
+            area.innerHTML = `
+                <div class="emoji">${emoji}</div>
+                <div class="result">${reactionTime}ms</div>
+                <div class="instruction">${message}<br><br>Haz clic para intentar de nuevo</div>
+            `;
+
+            updateDisplay();
+        }
+
+        function tooSoon() {
+            clearTimeout(timeout);
+            state = 'result';
+            area.className = 'reaction-area fail';
+            area.innerHTML = `
+                <div class="emoji">❌</div>
+                <div class="instruction">¡Demasiado pronto!<br><br>Espera al color azul<br><br>Haz clic para reintentar</div>
+            `;
+        }
+
+        area.addEventListener('click', () => {
+            if (state === 'waiting') {
+                startTest();
+            } else if (state === 'ready') {
+                tooSoon();
+            } else if (state === 'go') {
+                recordTime();
+            } else if (state === 'result') {
+                state = 'waiting';
+                area.className = 'reaction-area waiting';
+                area.innerHTML = `
+                    <div class="emoji">👆</div>
+                    <div class="instruction">Haz clic para comenzar</div>
+                `;
+            }
+        });
+
+        function resetStats() {
+            if (confirm('¿Estás seguro de que quieres borrar todas las estadísticas?')) {
+                history = [];
+                localStorage.removeItem('reactionHistory');
+                updateDisplay();
+                state = 'waiting';
+                area.className = 'reaction-area waiting';
+                area.innerHTML = `
+                    <div class="emoji">👆</div>
+                    <div class="instruction">Haz clic para comenzar</div>
+                `;
+            }
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Memoria - DJ Paco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color de DJ Paco */
+        :root {
+            --primary-color: #ff3366;
+            --secondary-color: #6c63ff;
+            --accent-color: #00d9ff;
+            --dark-color: #121212;
+            --dark-secondary: #1e1e1e;
+            --light-color: #ffffff;
+            --gray-color: #f5f5f5;
+            --text-color: #333333;
+            --font-primary: "Montserrat", sans-serif;
+            --font-secondary: "Poppins", sans-serif;
+            --transition-medium: 0.3s ease;
+            --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
+            --border-radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Fondo oscuro de DJ Paco */
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--dark-secondary) 100%);
+            color: var(--light-color);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            /* Botón con gradiente rosa-morado */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .game-container {
+            max-width: 600px;
+            width: 100%;
+            margin-top: 3rem;
+        }
+
+        /* Título con gradiente de DJ Paco */
+        h1 {
+            font-family: var(--font-secondary);
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            /* Valores estadísticos en rosa */
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            /* mejora en la animación 3D */
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .card:hover:not(.flipped):not(.matched) {
+            /* efecto hover mejorado */
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.3);
+        }
+
+        .card.flipped {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            /* animación de volteo mejorada */
+            animation: flipCard 0.6s ease;
+        }
+
+        @keyframes flipCard {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(180deg); }
+        }
+
+        .card.matched {
+            /* Cartas emparejadas en cyan */
+            background: var(--accent-color);
+            cursor: default;
+            animation: matchPulse 0.5s ease;
+        }
+
+        @keyframes matchPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+            border-radius: 12px;
+        }
+
+        .card-front {
+            background: white;
+            color: #667eea;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            transform: rotateY(180deg);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        button {
+            /* Botones con gradiente rosa-morado */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-color);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .win-message {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+        }
+
+        .win-message.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .win-message h2 {
+            /* Mensaje de victoria en cyan */
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .win-message p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .board {
+                gap: 0.75rem;
+            }
+
+            .card {
+                font-size: 2rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Volver</a>
+    
+    <div class="game-container">
+        <h1>Juego de Memoria</h1>
+
+        <div class="win-message" id="winMessage">
+            <h2>¡Felicitaciones!</h2>
+            <p id="winText"></p>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Movimientos</div>
+                <div class="stat-value" id="moves">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Parejas</div>
+                <div class="stat-value" id="pairs">0/8</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Mejor Récord</div>
+                <div class="stat-value" id="record">-</div>
+            </div>
+        </div>
+
+        <div class="board" id="board"></div>
+
+        <div class="buttons">
+            <button onclick="resetGame()">Nuevo Juego</button>
+        </div>
+    </div>
+
+    <script>
+        const emojis = ['🎵', '🎸', '🎹', '🎤', '🎧', '🎼', '🎺', '🥁'];
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let canFlip = true;
+
+        function initGame() {
+            const gameCards = [...emojis, ...emojis];
+            gameCards.sort(() => Math.random() - 0.5);
+            
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            
+            gameCards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.emoji = emoji;
+                card.dataset.index = index;
+                card.innerHTML = `
+                    <div class="card-front">?</div>
+                    <div class="card-back">${emoji}</div>
+                `;
+                card.addEventListener('click', flipCard);
+                board.appendChild(card);
+            });
+
+            cards = document.querySelectorAll('.card');
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            canFlip = true;
+            
+            updateStats();
+            document.getElementById('winMessage').classList.remove('show');
+        }
+
+        function flipCard() {
+            if (!canFlip) return;
+            if (this.classList.contains('flipped') || this.classList.contains('matched')) return;
+            if (flippedCards.length >= 2) return;
+
+            this.classList.add('flipped');
+            flippedCards.push(this);
+
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+
+            if (flippedCards.length === 2) {
+                moves++;
+                updateStats();
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            canFlip = false;
+            const [card1, card2] = flippedCards;
+            
+            if (card1.dataset.emoji === card2.dataset.emoji) {
+                setTimeout(() => {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    matchedPairs++;
+                    updateStats();
+                    flippedCards = [];
+                    canFlip = true;
+                    
+                    if (matchedPairs === emojis.length) {
+                        gameWon();
+                    }
+                }, 500);
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    flippedCards = [];
+                    canFlip = true;
+                }, 1000);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('pairs').textContent = `${matchedPairs}/${emojis.length}`;
+            
+            const record = localStorage.getItem('memoryRecord');
+            if (record) {
+                document.getElementById('record').textContent = record;
+            }
+        }
+
+        function gameWon() {
+            const record = localStorage.getItem('memoryRecord');
+            if (!record || moves < parseInt(record)) {
+                localStorage.setItem('memoryRecord', moves);
+                document.getElementById('winText').textContent = `¡Nuevo récord! Completaste el juego en ${moves} movimientos.`;
+            } else {
+                document.getElementById('winText').textContent = `¡Completaste el juego en ${moves} movimientos!`;
+            }
+            document.getElementById('winMessage').classList.add('show');
+            updateStats();
+        }
+
+        function resetGame() {
+            initGame();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adivina el Número - DJ Paco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color de DJ Paco */
+        :root {
+            --primary-color: #ff3366;
+            --secondary-color: #6c63ff;
+            --accent-color: #00d9ff;
+            --dark-color: #121212;
+            --dark-secondary: #1e1e1e;
+            --light-color: #ffffff;
+            --gray-color: #f5f5f5;
+            --text-color: #333333;
+            --font-primary: "Montserrat", sans-serif;
+            --font-secondary: "Poppins", sans-serif;
+            --transition-medium: 0.3s ease;
+            --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
+            --border-radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Fondo oscuro de DJ Paco */
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--dark-secondary) 100%);
+            color: var(--light-color);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            /* Botón con gradiente rosa-morado */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .game-container {
+            max-width: 500px;
+            width: 100%;
+            margin-top: 3rem;
+        }
+
+        /* Título con gradiente de DJ Paco */
+        h1 {
+            font-family: var(--font-secondary);
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .difficulty {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .difficulty h3 {
+            /* Subtítulo en rosa */
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .difficulty-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .difficulty-button {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+
+        .difficulty-button.active {
+            /* Botón activo con gradiente rosa-morado */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-color: transparent;
+        }
+
+        .game-info {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .info-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            /* Valor de info en rosa */
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .game-panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.1);
+            transform: scale(1.02);
+        }
+
+        input[type="number"]:hover {
+            border-color: var(--secondary-color);
+        }
+
+        button.guess {
+            width: 100%;
+            /* Botón adivinar con gradiente */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-bottom: 1rem;
+        }
+
+        button.guess:hover {
+            transform: translateY(-2px);
+        }
+
+        button.guess:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feedback {
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback.high {
+            /* Feedback alto en rosa */
+            background: #fee2e2;
+            color: var(--primary-color);
+        }
+
+        .feedback.low {
+            /* Feedback bajo en morado */
+            background: #ede9fe;
+            color: var(--secondary-color);
+        }
+
+        .feedback.win {
+            /* Feedback ganador en cyan */
+            background: #cffafe;
+            color: var(--accent-color);
+        }
+
+        .history {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 2rem;
+        }
+
+        .history h3 {
+            /* Título de historial en rosa */
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            padding: 0.5rem 1rem;
+            background: #f1f5f9;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #64748b;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        button.reset {
+            width: 100%;
+            background: white;
+            /* Botón reset con borde rosa */
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button.reset:hover {
+            /* Hover con gradiente */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .difficulty-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Volver</a>
+    
+    <div class="game-container">
+        <h1>Adivina el Número</h1>
+
+        <div class="difficulty">
+            <h3>Selecciona Dificultad</h3>
+            <div class="difficulty-buttons">
+                <button class="difficulty-button" onclick="setDifficulty('easy')">Fácil (1-50)</button>
+                <button class="difficulty-button active" onclick="setDifficulty('medium')">Medio (1-100)</button>
+                <button class="difficulty-button" onclick="setDifficulty('hard')">Difícil (1-500)</button>
+            </div>
+        </div>
+
+        <div class="game-info">
+            <div class="info-label">Intentos Restantes</div>
+            <div class="info-value" id="attempts">10</div>
+        </div>
+
+        <div class="game-panel">
+            <div class="input-group">
+                <input type="number" id="guessInput" placeholder="?" min="1">
+            </div>
+            <button class="guess" onclick="makeGuess()">Adivinar</button>
+            <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="history">
+            <h3>Historial de Intentos</h3>
+            <div class="history-list" id="historyList">
+                <span class="history-item">Ningún intento aún</span>
+            </div>
+        </div>
+
+        <button class="reset" onclick="resetGame()">Nuevo Juego</button>
+    </div>
+
+    <script>
+        let targetNumber;
+        let maxNumber = 100;
+        let maxAttempts = 10;
+        let attemptsLeft;
+        let guessHistory = [];
+        let difficulty = 'medium';
+
+        function initGame() {
+            targetNumber = Math.floor(Math.random() * maxNumber) + 1;
+            attemptsLeft = maxAttempts;
+            guessHistory = [];
+            document.getElementById('attempts').textContent = attemptsLeft;
+            document.getElementById('guessInput').value = '';
+            document.getElementById('guessInput').max = maxNumber;
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('historyList').innerHTML = '<span class="history-item">Ningún intento aún</span>';
+        }
+
+        function setDifficulty(level) {
+            difficulty = level;
+            
+            document.querySelectorAll('.difficulty-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            switch(level) {
+                case 'easy':
+                    maxNumber = 50;
+                    maxAttempts = 8;
+                    break;
+                case 'medium':
+                    maxNumber = 100;
+                    maxAttempts = 10;
+                    break;
+                case 'hard':
+                    maxNumber = 500;
+                    maxAttempts = 15;
+                    break;
+            }
+            
+            initGame();
+        }
+
+        function makeGuess() {
+            const guess = parseInt(document.getElementById('guessInput').value);
+            const feedback = document.getElementById('feedback');
+            
+            if (!guess || guess < 1 || guess > maxNumber) {
+                showFeedback(`Por favor ingresa un número entre 1 y ${maxNumber}`, 'high');
+                if (navigator.vibrate) {
+                    navigator.vibrate([100, 50, 100]);
+                }
+                return;
+            }
+            
+            guessHistory.push(guess);
+            attemptsLeft--;
+            
+            updateHistory();
+            document.getElementById('attempts').textContent = attemptsLeft;
+            document.getElementById('guessInput').value = '';
+            document.getElementById('guessInput').focus();
+            
+            if (guess === targetNumber) {
+                showFeedback(`¡Felicitaciones! Adivinaste en ${guessHistory.length} intentos`, 'win');
+                document.querySelector('.guess').disabled = true;
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200, 100, 200]);
+                }
+            } else if (attemptsLeft === 0) {
+                showFeedback(`¡Game Over! El número era ${targetNumber}`, 'high');
+                document.querySelector('.guess').disabled = true;
+            } else if (guess > targetNumber) {
+                const diff = guess - targetNumber;
+                const hint = diff > 50 ? ' (mucho más bajo)' : diff > 20 ? ' (bastante más bajo)' : ' (un poco más bajo)';
+                showFeedback(`Demasiado alto${hint}`, 'high');
+            } else {
+                const diff = targetNumber - guess;
+                const hint = diff > 50 ? ' (mucho más alto)' : diff > 20 ? ' (bastante más alto)' : ' (un poco más alto)';
+                showFeedback(`Demasiado bajo${hint}`, 'low');
+            }
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback show ${type}`;
+        }
+
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = guessHistory.map(guess => 
+                `<span class="history-item">${guess}</span>`
+            ).join('');
+        }
+
+        function resetGame() {
+            document.querySelector('.guess').disabled = false;
+            initGame();
+        }
+
+        document.getElementById('guessInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                makeGuess();
+            }
+        });
+
+        initGame();
+    </script>
+</body>
+</html>
