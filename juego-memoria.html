@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego de Memoria - DJ Paco</title>
+    <title>Memory Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Variables de color de DJ Paco */
         :root {
             --primary-color: #ff3366;
             --secondary-color: #6c63ff;
@@ -14,13 +14,13 @@
             --dark-color: #121212;
             --dark-secondary: #1e1e1e;
             --light-color: #ffffff;
-            --gray-color: #f5f5f5;
             --text-color: #333333;
             --font-primary: "Montserrat", sans-serif;
             --font-secondary: "Poppins", sans-serif;
             --transition-medium: 0.3s ease;
             --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
             --border-radius-lg: 16px;
+            --border-radius-md: 8px;
         }
 
         * {
@@ -29,318 +29,502 @@
             box-sizing: border-box;
         }
 
-        /* Fondo oscuro de DJ Paco */
         body {
             font-family: var(--font-primary);
             background: linear-gradient(135deg, var(--dark-color) 0%, var(--dark-secondary) 100%);
-            color: var(--light-color);
             min-height: 100vh;
-            padding: 2rem 1rem;
             display: flex;
-            flex-direction: column;
             align-items: center;
-        }
-
-        .back-button {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            /* Botón con gradiente rosa-morado */
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            justify-content: center;
+            padding: 2rem;
             color: var(--light-color);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
-            transition: transform 0.2s ease;
-        }
-
-        .back-button:hover {
-            transform: translateY(-2px);
         }
 
         .game-container {
-            max-width: 600px;
+            max-width: 800px;
             width: 100%;
-            margin-top: 3rem;
         }
 
-        /* Título con gradiente de DJ Paco */
-        h1 {
-            font-family: var(--font-secondary);
-            color: white;
+        .game-header {
             text-align: center;
             margin-bottom: 2rem;
+        }
+
+        .game-header h1 {
+            font-family: var(--font-secondary);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 5px 15px rgba(255, 51, 102, 0.3);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .records {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .record-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius-md);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 51, 102, 0.2);
+        }
+
+        .record-item i {
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+
+        .record-item span {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .record-item strong {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .stat-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius-md);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+            perspective: 1000px;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card.flip {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            animation: matchAnimation 0.6s ease;
+            pointer-events: none;
+            opacity: 1;
+        }
+
+        .card.matched .card-back {
+            opacity: 1;
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius-lg);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .card-front i {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card-back {
+            background: var(--light-color);
+            transform: rotateY(180deg);
+        }
+
+        .card-back {
+            font-size: 4rem;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-family: var(--font-primary);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-medium);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-color);
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 51, 102, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .victory-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-medium);
+            z-index: 1000;
+        }
+
+        .victory-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .victory-content {
+            background: linear-gradient(135deg, var(--dark-color), var(--dark-secondary));
+            padding: 3rem;
+            border-radius: var(--border-radius-lg);
+            text-align: center;
+            box-shadow: var(--shadow-medium);
+            border: 2px solid var(--primary-color);
+            animation: modalAppear 0.5s ease;
+        }
+
+        .victory-content h2 {
+            font-family: var(--font-secondary);
             font-size: 2.5rem;
+            margin-bottom: 1rem;
             background: linear-gradient(to right, var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
 
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
+        .victory-content p {
+            font-size: 1.2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            opacity: 0.9;
         }
 
-        .stat {
-            text-align: center;
+        @keyframes matchAnimation {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1) rotateY(180deg);
+            }
         }
 
-        .stat-label {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-value {
-            /* Valores estadísticos en rosa */
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .board {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            aspect-ratio: 1;
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            position: relative;
-            /* mejora en la animación 3D */
-            transform-style: preserve-3d;
-            perspective: 1000px;
-        }
-
-        .card:hover:not(.flipped):not(.matched) {
-            /* efecto hover mejorado */
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.3);
-        }
-
-        .card.flipped {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            /* animación de volteo mejorada */
-            animation: flipCard 0.6s ease;
-        }
-
-        @keyframes flipCard {
-            0% { transform: rotateY(0deg); }
-            50% { transform: rotateY(90deg); }
-            100% { transform: rotateY(180deg); }
-        }
-
-        .card.matched {
-            /* Cartas emparejadas en cyan */
-            background: var(--accent-color);
-            cursor: default;
-            animation: matchPulse 0.5s ease;
-        }
-
-        @keyframes matchPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backface-visibility: hidden;
-            border-radius: 12px;
-        }
-
-        .card-front {
-            background: white;
-            color: #667eea;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .card-back {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            transform: rotateY(180deg);
-        }
-
-        .buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        button {
-            /* Botones con gradiente rosa-morado */
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--light-color);
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
-            transition: transform 0.2s ease;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-        }
-
-        .win-message {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            display: none;
-        }
-
-        .win-message.show {
-            display: block;
-            animation: slideDown 0.5s ease;
-        }
-
-        @keyframes slideDown {
+        @keyframes modalAppear {
             from {
+                transform: scale(0.8);
                 opacity: 0;
-                transform: translateY(-20px);
             }
             to {
+                transform: scale(1);
                 opacity: 1;
-                transform: translateY(0);
             }
-        }
-
-        .win-message h2 {
-            /* Mensaje de victoria en cyan */
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-            font-size: 2rem;
-        }
-
-        .win-message p {
-            color: #64748b;
-            font-size: 1.1rem;
         }
 
         @media (max-width: 768px) {
-            .board {
+            .game-header h1 {
+                font-size: 2rem;
+            }
+
+            .game-stats {
+                gap: 1rem;
+            }
+
+            .stat-item {
+                padding: 0.75rem 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .game-board {
                 gap: 0.75rem;
             }
 
-            .card {
+            .card-back {
                 font-size: 2rem;
+                font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif;
             }
 
-            h1 {
+            .game-stats {
+                gap: 1rem;
+            }
+
+            .records {
+                gap: 1rem;
+            }
+
+            .record-item {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .victory-content {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            .victory-content h2 {
                 font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-board {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.5rem;
+            }
+
+            .card-front i {
+                font-size: 1.5rem;
+            }
+
+            .card-back {
+                font-size: 2.5rem;
+                font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif;
             }
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-button">← Volver</a>
-    
     <div class="game-container">
-        <h1>Juego de Memoria</h1>
-
-        <div class="win-message" id="winMessage">
-            <h2>¡Felicitaciones!</h2>
-            <p id="winText"></p>
+        <div class="game-header">
+            <h1><i class="fas fa-brain"></i> Memory Game</h1>
         </div>
 
-        <div class="stats">
-            <div class="stat">
+        <div class="game-stats">
+            <div class="stat-item">
                 <div class="stat-label">Movimientos</div>
                 <div class="stat-value" id="moves">0</div>
             </div>
-            <div class="stat">
-                <div class="stat-label">Parejas</div>
-                <div class="stat-value" id="pairs">0/8</div>
+            <div class="stat-item">
+                <div class="stat-label">Tiempo</div>
+                <div class="stat-value" id="timer">0:00</div>
             </div>
-            <div class="stat">
-                <div class="stat-label">Mejor Récord</div>
-                <div class="stat-value" id="record">-</div>
+            <div class="stat-item">
+                <div class="stat-label">Parejas</div>
+                <div class="stat-value" id="matches">0/8</div>
             </div>
         </div>
 
-        <div class="board" id="board"></div>
+        <div class="records">
+            <div class="record-item">
+                <i class="fas fa-trophy"></i>
+                <span>Mejor Tiempo: <strong id="bestTime">-</strong></span>
+            </div>
+            <div class="record-item">
+                <i class="fas fa-star"></i>
+                <span>Mejores Movimientos: <strong id="bestMoves">-</strong></span>
+            </div>
+        </div>
 
-        <div class="buttons">
-            <button onclick="resetGame()">Nuevo Juego</button>
+        <div class="game-board" id="gameBoard"></div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="newGame">
+                <i class="fas fa-play"></i> Nuevo Juego
+            </button>
+            <button class="btn btn-secondary" id="resetGame">
+                <i class="fas fa-redo"></i> Reiniciar
+            </button>
+            <a href="index.html" class="back-button">← Volver</a>
+        </div>
+    </div>
+
+    <div class="victory-modal" id="victoryModal">
+        <div class="victory-content">
+            <h2><i class="fas fa-trophy"></i> ¡Felicidades!</h2>
+            <p>Has completado el juego</p>
+            <p><strong>Movimientos:</strong> <span id="finalMoves"></span></p>
+            <p><strong>Tiempo:</strong> <span id="finalTime"></span></p>
+            <button class="btn btn-primary" id="playAgain">
+                <i class="fas fa-play"></i> Jugar de Nuevo
+            </button>
         </div>
     </div>
 
     <script>
         const emojis = ['🎵', '🎸', '🎹', '🎤', '🎧', '🎼', '🎺', '🥁'];
-        let cards = [];
+
+        let cards = [...emojis, ...emojis];
         let flippedCards = [];
         let matchedPairs = 0;
         let moves = 0;
+        let timer = 0;
+        let timerInterval = null;
+        let gameStarted = false;
         let canFlip = true;
 
-        function initGame() {
-            const gameCards = [...emojis, ...emojis];
-            gameCards.sort(() => Math.random() - 0.5);
+        const gameBoard = document.getElementById('gameBoard');
+        const movesElement = document.getElementById('moves');
+        const timerElement = document.getElementById('timer');
+        const matchesElement = document.getElementById('matches');
+        const victoryModal = document.getElementById('victoryModal');
+        const finalMovesElement = document.getElementById('finalMoves');
+        const finalTimeElement = document.getElementById('finalTime');
+        const bestTimeElement = document.getElementById('bestTime');
+        const bestMovesElement = document.getElementById('bestMoves');
+
+        // Cargar récords guardados
+        function loadRecords() {
+            const bestTime = localStorage.getItem('memoryBestTime');
+            const bestMoves = localStorage.getItem('memoryBestMoves');
             
-            const board = document.getElementById('board');
-            board.innerHTML = '';
+            if (bestTime) {
+                const minutes = Math.floor(bestTime / 60);
+                const seconds = bestTime % 60;
+                bestTimeElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
             
-            gameCards.forEach((emoji, index) => {
+            if (bestMoves) {
+                bestMovesElement.textContent = bestMoves;
+            }
+        }
+
+        // Guardar récords si son mejores
+        function saveRecords() {
+            const bestTime = localStorage.getItem('memoryBestTime');
+            const bestMoves = localStorage.getItem('memoryBestMoves');
+            
+            if (!bestTime || timer < parseInt(bestTime)) {
+                localStorage.setItem('memoryBestTime', timer);
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+                bestTimeElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            if (!bestMoves || moves < parseInt(bestMoves)) {
+                localStorage.setItem('memoryBestMoves', moves);
+                bestMovesElement.textContent = moves;
+            }
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createBoard() {
+            gameBoard.innerHTML = '';
+            cards = shuffle([...emojis, ...emojis]);
+            
+            cards.forEach((emoji, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.dataset.emoji = emoji;
                 card.dataset.index = index;
+                
                 card.innerHTML = `
-                    <div class="card-front">?</div>
-                    <div class="card-back">${emoji}</div>
+                    <div class="card-front">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="card-back">
+                        ${emoji}
+                    </div>
                 `;
+                
                 card.addEventListener('click', flipCard);
-                board.appendChild(card);
+                gameBoard.appendChild(card);
             });
-
-            cards = document.querySelectorAll('.card');
-            flippedCards = [];
-            matchedPairs = 0;
-            moves = 0;
-            canFlip = true;
-            
-            updateStats();
-            document.getElementById('winMessage').classList.remove('show');
         }
 
         function flipCard() {
             if (!canFlip) return;
-            if (this.classList.contains('flipped') || this.classList.contains('matched')) return;
             if (flippedCards.length >= 2) return;
+            if (this.classList.contains('flip') || this.classList.contains('matched')) return;
 
-            this.classList.add('flipped');
+            if (!gameStarted) {
+                startTimer();
+                gameStarted = true;
+            }
+
+            this.classList.add('flip');
             flippedCards.push(this);
 
             if (navigator.vibrate) {
@@ -349,7 +533,7 @@
 
             if (flippedCards.length === 2) {
                 moves++;
-                updateStats();
+                movesElement.textContent = moves;
                 checkMatch();
             }
         }
@@ -357,64 +541,94 @@
         function checkMatch() {
             canFlip = false;
             const [card1, card2] = flippedCards;
-            
-            if (card1.dataset.emoji === card2.dataset.emoji) {
-                // Parejas encontradas - mantener flipped y agregar matched después de una pausa
+            const emoji1 = card1.dataset.emoji;
+            const emoji2 = card2.dataset.emoji;
+
+            if (emoji1 === emoji2) {
                 setTimeout(() => {
                     card1.classList.add('matched');
                     card2.classList.add('matched');
-                    // Mantener el emoji visible permanentemente en cartas emparejadas
                     matchedPairs++;
-                    updateStats();
+                    matchesElement.textContent = `${matchedPairs}/8`;
                     flippedCards = [];
                     canFlip = true;
-                    
+
                     if (navigator.vibrate) {
                         navigator.vibrate([50, 100, 50]);
                     }
-                    
-                    if (matchedPairs === emojis.length) {
-                        gameWon();
+
+                    if (matchedPairs === 8) {
+                        setTimeout(showVictory, 500);
                     }
                 }, 600);
             } else {
-                // No coinciden - esperar más tiempo antes de voltear de regreso
                 setTimeout(() => {
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
+                    card1.classList.remove('flip');
+                    card2.classList.remove('flip');
                     flippedCards = [];
                     canFlip = true;
                 }, 1500);
             }
         }
 
-        function updateStats() {
-            document.getElementById('moves').textContent = moves;
-            document.getElementById('pairs').textContent = `${matchedPairs}/${emojis.length}`;
-            
-            const record = localStorage.getItem('memoryRecord');
-            if (record) {
-                document.getElementById('record').textContent = record;
-            }
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timer++;
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
         }
 
-        function gameWon() {
-            const record = localStorage.getItem('memoryRecord');
-            if (!record || moves < parseInt(record)) {
-                localStorage.setItem('memoryRecord', moves);
-                document.getElementById('winText').textContent = `¡Nuevo récord! Completaste el juego en ${moves} movimientos.`;
-            } else {
-                document.getElementById('winText').textContent = `¡Completaste el juego en ${moves} movimientos!`;
-            }
-            document.getElementById('winMessage').classList.add('show');
-            updateStats();
+        function stopTimer() {
+            clearInterval(timerInterval);
         }
 
         function resetGame() {
-            initGame();
+            stopTimer();
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            timer = 0;
+            gameStarted = false;
+            canFlip = true;
+            
+            movesElement.textContent = '0';
+            timerElement.textContent = '0:00';
+            matchesElement.textContent = '0/8';
+            
+            createBoard();
         }
 
-        initGame();
+        function showVictory() {
+            stopTimer();
+            saveRecords();
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            finalMovesElement.textContent = moves;
+            finalTimeElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            victoryModal.classList.add('active');
+        }
+
+        function hideVictory() {
+            victoryModal.classList.remove('active');
+        }
+
+        document.getElementById('newGame').addEventListener('click', resetGame);
+        document.getElementById('resetGame').addEventListener('click', resetGame);
+        document.getElementById('playAgain').addEventListener('click', () => {
+            hideVictory();
+            resetGame();
+        });
+
+        victoryModal.addEventListener('click', (e) => {
+            if (e.target === victoryModal) {
+                hideVictory();
+            }
+        });
+
+        loadRecords();
+        createBoard();
     </script>
 </body>
 </html>
