@@ -359,27 +359,32 @@
             const [card1, card2] = flippedCards;
             
             if (card1.dataset.emoji === card2.dataset.emoji) {
+                // Parejas encontradas - mantener flipped y agregar matched después de una pausa
                 setTimeout(() => {
                     card1.classList.add('matched');
                     card2.classList.add('matched');
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
+                    // Mantener el emoji visible permanentemente en cartas emparejadas
                     matchedPairs++;
                     updateStats();
                     flippedCards = [];
                     canFlip = true;
                     
+                    if (navigator.vibrate) {
+                        navigator.vibrate([50, 100, 50]);
+                    }
+                    
                     if (matchedPairs === emojis.length) {
                         gameWon();
                     }
-                }, 500);
+                }, 600);
             } else {
+                // No coinciden - esperar más tiempo antes de voltear de regreso
                 setTimeout(() => {
                     card1.classList.remove('flipped');
                     card2.classList.remove('flipped');
                     flippedCards = [];
                     canFlip = true;
-                }, 1000);
+                }, 1500);
             }
         }
 
