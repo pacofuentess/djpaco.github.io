@@ -410,9 +410,10 @@
             <button class="btn btn-secondary" id="resetGame">
                 <i class="fas fa-redo"></i> Reiniciar
             </button>
-            <button class="btn btn-secondary" id="volver">
-                <i href="juegos.html" class="fas fa-back"></i> ← Volver
+            <button class="btn btn-secondary" id="volver" onclick="window.location.href='juegos.html'">
+                <i class="fas fa-back"></i> ← Volver
             </button>
+
         </div>
     </div>
 
@@ -586,7 +587,7 @@
             clearInterval(timerInterval);
         }
 
-                    
+                
         function resetGame() {
             stopTimer();
             flippedCards = [];
